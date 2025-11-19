@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tặng Cô Hường</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- Nút nhạc -->
+<button id="musicBtn">🎵</button>
+
+<!-- Nhạc nền -->
+<audio id="bgMusic" loop>
+    <source src="Em là cô giáo vùng cao.mp3" type="audio/mpeg">
+</audio>
+
+<!-- CARD CHÍNH -->
+<div class="card">
+    <div class="card-image">
+        <img src="1.jpg" alt="Thiệp 20/11">
+        <span class="badge"></span>
+    </div>
+
+    <h2 class="title">Chúc Mừng Ngày Nhà Giáo Việt Nam</h2>
+
+    <p class="description">
+        Nhân ngày 20/11, A3 xin gửi đến cô lời tri ân chân thành nhất.
+        Cảm ơn cô vì đã đồng hành và dẫn dắt chúng em nên người.
+    </p>
+
+    <div class="quote">
+        “Chúc cô luôn trẻ trung, 
+        yêu đời và lúc nào cũng tươi như nụ cười của cô trên bục giảng.”
+    </div>
+
+    <div class="buttons">
+        <button class="btn" id="openPopup">💌 Gửi lời chúc</button>
+        <button class="btn-outline" id="viewList">📜 Danh sách</button>
+    </div>
+</div>
+
+<!-- POPUP GỬI LỜI CHÚC -->
+<div id="popup" class="popup hidden">
+    <div class="popup-content">
+        <h3>💌 Gửi lời chúc</h3>
+
+        <label>Nhập tên của bạn:</label>
+        <input type="text" id="nameInput" placeholder="Ví dụ: Minh, Thảo, Nguyên...">
+
+        <label>Nhập lời chúc:</label>
+        <textarea id="wishInput" placeholder="Nhập lời chúc gửi đến thầy/cô..."></textarea>
+
+        <div class="popup-buttons">
+            <button id="cancelBtn" class="btn-outline">Hủy</button>
+            <button id="sendBtn" class="btn">Gửi</button>
+        </div>
+    </div>
+</div>
+
+<!-- POPUP DANH SÁCH -->
+<div id="listPopup" class="popup hidden">
+    <div class="popup-content list-popup">
+        <h3>📜 Danh sách lời chúc</h3>
+
+        <div id="wishList"><!-- JS build --></div>
+
+        <div class="list-footer">
+            <button id="closeList" class="btn">Đóng</button>
+            <button id="adminBtn" class="btn-outline">🔐 Admin</button>
+        </div>
+    </div>
+</div>
+
+<!-- POPUP ADMIN LOGIN -->
+<div id="adminLogin" class="popup hidden">
+    <div class="popup-content">
+        <h3>🔐 Đăng nhập Admin</h3>
+        <input type="password" id="adminPass" placeholder="Mật khẩu admin...">
+        <div class="popup-buttons">
+            <button id="cancelAdmin" class="btn-outline">Hủy</button>
+            <button id="submitAdmin" class="btn">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<!-- POPUP KẾT QUẢ -->
+<div id="resultBox" class="result hidden">
+    <div class="result-content">
+        <h3>🎉 Lời chúc của bạn</h3>
+        <p id="resultText"></p>
+        <button id="closeResult" class="btn">Đóng</button>
+    </div>
+</div>
+
+<script src="effect.js"></script>
+</body>
+</html>

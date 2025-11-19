@@ -1,0 +1,356 @@
+/* ===== NỀN CHUNG ===== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(145deg, #ffe7ce, #fff4e6);
+    font-family: "Inter", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ===== CARD CHÍNH ===== */
+.card {
+    width: 430px;
+    background: #ffffffdd;
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+    border: 2px solid #ffcf7d;
+    position: relative;
+    animation: fadein 1.2s ease;
+}
+
+.card-image {
+    position: relative;
+    height: 250px;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #ffb742;
+    padding: 8px 13px;
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.25);
+}
+
+.title {
+    margin-top: 22px;
+    font-family: "Great Vibes", cursive;
+    font-size: 38px;
+    text-align: center;
+    color: #d18a00;
+}
+
+.description {
+    text-align: center;
+    color: #444;
+    line-height: 1.6;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.quote {
+    margin-top: 18px;
+    padding: 14px;
+    background: #fff8e7;
+    border-left: 5px solid #ffb742;
+    border-radius: 10px;
+    font-style: italic;
+    font-size: 15px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.btn,
+.btn-outline {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
+    font-size: 15px;
+}
+
+.btn {
+    background: #ffb742;
+    color: white;
+    border: none;
+}
+
+.btn:hover {
+    transform: scale(1.07);
+    background: #ffc966;
+}
+
+.btn-outline {
+    border: 2px solid #ffb742;
+    color: #ffb742;
+    background: transparent;
+}
+
+.btn-outline:hover {
+    background: #ffb742;
+    color: white;
+    transform: scale(1.07);
+}
+
+/* ===== HIỆU ỨNG TIM HOA ===== */
+.heart, .flower {
+    position: fixed;
+    top: -10px;
+    pointer-events: none;
+    animation: fall linear forwards;
+    z-index: 1;
+}
+.heart::before { content: "❤️"; font-size: 22px; }
+.flower::before { content: "🌸"; font-size: 24px; }
+
+@keyframes fall {
+    0%   { transform: translateY(0) rotate(0); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+/* ===== NÚT NHẠC ===== */
+#musicBtn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #ffb742;
+    color: white;
+    padding: 14px;
+    border-radius: 50%;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    transition: 0.25s;
+    z-index: 10;
+}
+
+#musicBtn:hover {
+    transform: scale(1.15);
+    background: #ffd47f;
+}
+
+/* ===== POPUP CHUNG ===== */
+.popup, .result {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+}
+
+.hidden {
+    display: none;
+}
+
+.popup-content, .result-content {
+    background: white;
+    padding: 25px;
+    width: 420px;
+    max-height: 90vh;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    animation: fadeIn .3s ease;
+    overflow-y: auto;
+}
+
+.popup-content h3,
+.result-content h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #d18a00;
+    font-weight: 600;
+}
+
+/* INPUT POPUP */
+.popup-content input,
+.popup-content textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ffb742;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    outline: none;
+    font-size: 15px;
+}
+
+.popup-content textarea {
+    height: 90px;
+    resize: none;
+}
+
+.popup-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+/* POPUP KẾT QUẢ */
+.result-content {
+    text-align: center;
+}
+#resultText {
+    font-size: 16px;
+    color: #444;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* ===== DANH SÁCH LỜI CHÚC ===== */
+.list-popup {
+    width: 480px;
+}
+
+#wishList {
+    margin-top: 10px;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 2px solid #ffcf7d;
+    outline: none;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.filterBtn, #delAll {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #f7f7f7;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+#delAll, .danger {
+    background: #ff5555;
+    border-color: #ff5555;
+    color: #fff;
+}
+
+#delAll:hover {
+    filter: brightness(1.05);
+}
+
+#wishItems {
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Card lời chúc – user */
+.wishItem {
+    padding: 10px 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    border: 1px solid #eee;
+    font-size: 14px;
+}
+
+.wishItem.user {
+    background: #fff;
+}
+
+.wish-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wish-name {
+    font-weight: 600;
+}
+
+.wish-time {
+    font-size: 12px;
+    color: #666;
+}
+
+.wish-text {
+    margin-top: 4px;
+}
+
+/* Card lời chúc – admin (theo mức toxic) */
+.wishItem.admin.clean { background: #eaffea; border-color: #b2e8b2; }
+.wishItem.admin.light  { background: #fff8d6; border-color: #ffe49a; }
+.wishItem.admin.medium { background: #ffe5e5; border-color: #ffb3b3; }
+
+.wish-meta {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #555;
+}
+
+.wish-actions {
+    margin-top: 6px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.wish-actions button {
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: none;
+    background: #ff5555;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* FOOTER DANH SÁCH */
+.list-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes fadein {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(.85); }
+    to   { opacity: 1; transform: scale(1); }
+}
