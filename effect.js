@@ -141,16 +141,22 @@ if (sendBtn) {
             time: new Date().toLocaleString("vi-VN")
         };
 
-        addWishToDB(obj);
+        // GHI LÊN FIREBASE – CÓ BẮT LỖI RÕ RÀNG
+        addWishToDB(obj)
+          .then(() => {
+              const resultText = document.getElementById("resultText");
+              resultText.innerHTML = `<b>${name}</b> gửi lời chúc:<br><br>“${wish}”`;
 
-        const resultText = document.getElementById("resultText");
-        resultText.innerHTML = `<b>${name}</b> gửi lời chúc:<br><br>“${wish}”`;
+              popup.classList.add("hidden");
+              resultBox.classList.remove("hidden");
 
-        popup.classList.add("hidden");
-        resultBox.classList.remove("hidden");
-
-        nameInput.value = "";
-        wishInput.value = "";
+              nameInput.value = "";
+              wishInput.value = "";
+          })
+          .catch(err => {
+              console.error("Firebase error:", err);
+              alert("Lỗi khi lưu lời chúc lên Firebase: " + err.message);
+          });
     };
 }
 if (closeResult) closeResult.onclick = () => resultBox.classList.add("hidden");
