@@ -1,6 +1,7 @@
-/* ============================================
-   TIM & HOA RƠI
-============================================ */
+// Đợi DOM load xong hẵng chạy cho chắc
+window.addEventListener("load", function() {
+
+/* ===== TIM & HOA RƠI ===== */
 function createHeart() {
     const h = document.createElement("div");
     h.classList.add("heart");
@@ -20,29 +21,24 @@ function createFlower() {
 setInterval(createHeart, 900);
 setInterval(createFlower, 1300);
 
-/* ============================================
-   NHẠC
-============================================ */
+/* ===== NHẠC ===== */
 const music = document.getElementById("bgMusic");
 const musicBtn = document.getElementById("musicBtn");
 if (music && musicBtn) {
     musicBtn.onclick = () => music.paused ? music.play() : music.pause();
 }
 
-/* ============================================
-   FIREBASE STORAGE (CHUNG TOÀN LỚP)
-============================================ */
+/* ===== FIREBASE ===== */
 const db = firebase.database();
 let wishStorage = [];
 
-// Lắng nghe realtime dữ liệu từ Firebase
+// realtime listener
 db.ref("wishes").on("value", snap => {
     const arr = [];
     snap.forEach(child => {
         arr.push({ id: child.key, ...child.val() });
     });
     wishStorage = arr;
-
     const listPopup = document.getElementById("listPopup");
     if (listPopup && !listPopup.classList.contains("hidden")) {
         renderItems();
@@ -59,17 +55,13 @@ function deleteAllWishesFromDB() {
     return db.ref("wishes").remove();
 }
 
-/* ============================================
-   BOT TOXIC (STRICT)
-============================================ */
+/* ===== BOT TOXIC ===== */
 function checkToxic(msg) {
     const text = msg.toLowerCase().trim();
 
-    // lol/loll/l0ll → 'lồn'
     if (/l[\W_]*[o0óòôöø][\W_]*l[\W_]*l*/.test(text))
         return { level: 100, word: "lol / loll / l0ll" };
 
-    // duma / đụ má / đu ma...
     if (/d[ưu][\W_]*ma/.test(text) || /đ[ụu][\W_]*m[aá]/.test(text))
         return { level: 100, word: "duma / đu ma / đụ má" };
 
@@ -102,9 +94,7 @@ function isSpam(x) {
     return false;
 }
 
-/* ============================================
-   POPUP GỬI LỜI CHÚC
-============================================ */
+/* ===== POPUP GỬI LỜI CHÚC ===== */
 const popup       = document.getElementById("popup");
 const openPopup   = document.getElementById("openPopup");
 const cancelBtn   = document.getElementById("cancelBtn");
@@ -126,14 +116,12 @@ if (sendBtn) {
             alert("⚠ Vui lòng nhập đầy đủ tên và lời chúc!");
             return;
         }
-
         if (isSpam(wish)) {
             alert("⚠ Lời chúc quá ngắn hoặc không hợp lệ.");
             return;
         }
 
         const toxic = checkToxic(wish);
-
         if (toxic.level === 100) {
             alert(`❌ Lời chúc chứa từ ngữ không phù hợp (“${toxic.word}”). Không thể gửi!`);
             return;
@@ -153,7 +141,7 @@ if (sendBtn) {
             time: new Date().toLocaleString("vi-VN")
         };
 
-        addWishToDB(obj); // lưu lên Firebase
+        addWishToDB(obj);
 
         const resultText = document.getElementById("resultText");
         resultText.innerHTML = `<b>${name}</b> gửi lời chúc:<br><br>“${wish}”`;
@@ -167,9 +155,7 @@ if (sendBtn) {
 }
 if (closeResult) closeResult.onclick = () => resultBox.classList.add("hidden");
 
-/* ============================================
-   DANH SÁCH + ADMIN
-============================================ */
+/* ===== DANH SÁCH + ADMIN ===== */
 let isAdmin = false;
 let currentFilter = "all";
 let currentSearch = "";
@@ -183,7 +169,7 @@ const adminLogin  = document.getElementById("adminLogin");
 const adminPass   = document.getElementById("adminPass");
 const submitAdmin = document.getElementById("submitAdmin");
 const cancelAdmin = document.getElementById("cancelAdmin");
-const ADMIN_PASSWORD = "14102008";   // pass bạn đang dùng
+const ADMIN_PASSWORD = "14102008"; // đổi nếu bạn muốn
 
 if (viewList)  viewList.onclick = () => openListPopup();
 if (closeList) closeList.onclick = () => { listPopup.classList.add("hidden"); isAdmin = false; };
@@ -194,14 +180,12 @@ if (adminBtn) {
         adminLogin.classList.remove("hidden");
     };
 }
-
 if (cancelAdmin) {
     cancelAdmin.onclick = () => {
         adminLogin.classList.add("hidden");
         adminPass.value = "";
     };
 }
-
 if (submitAdmin) {
     submitAdmin.onclick = () => {
         if (adminPass.value !== ADMIN_PASSWORD) {
@@ -215,7 +199,6 @@ if (submitAdmin) {
     };
 }
 
-/* mở popup danh sách */
 function openListPopup() {
     currentFilter = "all";
     currentSearch = "";
@@ -223,7 +206,6 @@ function openListPopup() {
     buildList();
 }
 
-/* build khung search + filter + list */
 function buildList() {
     const wrap = document.getElementById("wishList");
     if (!wrap) return;
@@ -261,7 +243,6 @@ function buildList() {
     renderItems();
 }
 
-/* render từng lời chúc */
 function renderItems() {
     const container = document.getElementById("wishItems");
     if (!container) return;
@@ -325,18 +306,16 @@ function renderItems() {
     }
 }
 
-/* xóa từng lời chúc (admin) */
 function deleteWish(id) {
     deleteWishFromDB(id);
 }
-
-/* xóa tất cả (admin) */
 function deleteAllWishes() {
     if (!wishStorage.length) {
         alert("Không có lời chúc nào để xóa.");
         return;
     }
     if (!confirm("Bạn có chắc chắn muốn xóa TẤT CẢ lời chúc?")) return;
-
     deleteAllWishesFromDB();
 }
+
+}); // end window.load
