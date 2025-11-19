@@ -3,9 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tặng Cô Hường - A3</title>
+    <title>Tặng Cô Hường</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Firebase compat CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
+
+    <!-- Cấu hình Firebase của bạn -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCXeG-aJEyiYcwa14YNKNejH9Cq2SQ8mQw",
+            authDomain: "a3-89d81.firebaseapp.com",
+            databaseURL: "https://a3-89d81-default-rtdb.firebaseio.com",
+            projectId: "a3-89d81",
+            storageBucket: "a3-89d81.firebasestorage.app",
+            messagingSenderId: "871915855936",
+            appId: "1:871915855936:web:8b901b1065c71b83047fa5",
+            measurementId: "G-75FC9SZJXL"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
 </head>
 
 <body>
@@ -28,12 +47,13 @@
     <h2 class="title">Chúc Mừng Ngày Nhà Giáo Việt Nam</h2>
 
     <p class="description">
-        Nhân ngày 20/11, A3 xin gửi đến cô Hường lời tri ân chân thành nhất.
-        Cảm ơn cô vì đã luôn yêu thương và đồng hành cùng chúng em.
+        Nhân ngày 20/11, A3 xin gửi đến cô lời tri ân chân thành nhất.
+        Cảm ơn cô vì đã đồng hành và dẫn dắt chúng em nên người.
     </p>
 
     <div class="quote">
-        “Chúc cô luôn mạnh khỏe, hạnh phúc và lúc nào cũng rạng rỡ như nụ cười trên bục giảng.”
+        “Chúc cô luôn trẻ trung, 
+        yêu đời và lúc nào cũng tươi như nụ cười của cô trên bục giảng.”
     </div>
 
     <div class="buttons">
@@ -51,7 +71,7 @@
         <input type="text" id="nameInput" placeholder="Ví dụ: Minh, Thảo, Nguyên...">
 
         <label>Nhập lời chúc:</label>
-        <textarea id="wishInput" placeholder="Nhập lời chúc gửi đến cô..."></textarea>
+        <textarea id="wishInput" placeholder="Nhập lời chúc gửi đến thầy/cô..."></textarea>
 
         <div class="popup-buttons">
             <button id="cancelBtn" class="btn-outline">Hủy</button>
@@ -95,24 +115,7 @@
     </div>
 </div>
 
-<!-- ===== Firebase compat SDK + config ===== -->
-<script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCXeG-aJEyiYcwa14YNKNejH9Cq2SQ8mQw",
-    authDomain: "a3-89d81.firebaseapp.com",
-    databaseURL: "https://a3-89d81-default-rtdb.firebaseio.com",
-    projectId: "a3-89d81",
-    storageBucket: "a3-89d81.firebasestorage.app",
-    messagingSenderId: "871915855936",
-    appId: "1:871915855936:web:8b901b1065c71b83047fa5",
-    measurementId: "G-75FC9SZJXL"
-  };
-  firebase.initializeApp(firebaseConfig);
-</script>
-
+<!-- JS chính -->
 <script src="effect.js"></script>
 </body>
 </html>
