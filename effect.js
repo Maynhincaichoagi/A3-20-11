@@ -30,13 +30,12 @@ if (music && musicBtn) {
 }
 
 /* ============================================
-   LƯU LỜI CHÚC (FIREBASE)
+   LƯU LỜI CHÚC – FIREBASE (THAY CHO localStorage)
 ============================================ */
-// KHÔNG DÙNG localStorage nữa
 const db = firebase.database();
 let wishStorage = [];
 
-// lắng nghe realtime từ Firebase
+// Lắng nghe realtime từ Firebase
 db.ref("wishes").on("value", snap => {
     const arr = [];
     snap.forEach(child => {
@@ -50,7 +49,6 @@ db.ref("wishes").on("value", snap => {
     }
 });
 
-// hàm thao tác với DB
 function addWishToDB(obj) {
     return db.ref("wishes").push(obj);
 }
@@ -155,22 +153,22 @@ if (sendBtn) {
             time: new Date().toLocaleString("vi-VN")
         };
 
-        // LƯU LÊN FIREBASE
+        // Ghi lên Firebase
         addWishToDB(obj)
-          .then(() => {
-              const resultText = document.getElementById("resultText");
-              resultText.innerHTML = `<b>${name}</b> gửi lời chúc:<br><br>“${wish}”`;
+            .then(() => {
+                const resultText = document.getElementById("resultText");
+                resultText.innerHTML = `<b>${name}</b> gửi lời chúc:<br><br>“${wish}”`;
 
-              popup.classList.add("hidden");
-              resultBox.classList.remove("hidden");
+                popup.classList.add("hidden");
+                resultBox.classList.remove("hidden");
 
-              nameInput.value = "";
-              wishInput.value = "";
-          })
-          .catch(err => {
-              console.error("Firebase error:", err);
-              alert("Lỗi khi lưu lời chúc lên Firebase: " + err.message);
-          });
+                nameInput.value = "";
+                wishInput.value = "";
+            })
+            .catch(err => {
+                console.error("Firebase error:", err);
+                alert("Lỗi khi lưu lời chúc lên Firebase: " + err.message);
+            });
     };
 }
 if (closeResult) closeResult.onclick = () => resultBox.classList.add("hidden");
@@ -191,6 +189,8 @@ const adminLogin  = document.getElementById("adminLogin");
 const adminPass   = document.getElementById("adminPass");
 const submitAdmin = document.getElementById("submitAdmin");
 const cancelAdmin = document.getElementById("cancelAdmin");
+
+// đổi pass tại đây nếu muốn
 const ADMIN_PASSWORD = "14102008";
 
 if (viewList)  viewList.onclick = () => openListPopup();
@@ -219,7 +219,7 @@ if (submitAdmin) {
         isAdmin = true;
         adminLogin.classList.add("hidden");
         adminPass.value = "";
-        buildList();
+        buildList();   // reload list ở chế độ admin
     };
 }
 
@@ -333,7 +333,7 @@ function renderItems() {
     }
 }
 
-/* xóa từng lời chúc (admin) */
+/* xóa từng lời chúc (admin đã đăng nhập) */
 function deleteWish(id) {
     deleteWishFromDB(id);
 }
