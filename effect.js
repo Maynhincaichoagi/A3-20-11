@@ -30,11 +30,33 @@ if (music && musicBtn) {
 }
 
 /* ============================================
-   LƯU LỜI CHÚC
+   FIREBASE STORAGE (CHUNG TOÀN LỚP)
 ============================================ */
-let wishStorage = JSON.parse(localStorage.getItem("wishList") || "[]");
-function saveList() {
-    localStorage.setItem("wishList", JSON.stringify(wishStorage));
+const db = firebase.database();
+let wishStorage = [];
+
+// Lắng nghe realtime dữ liệu từ Firebase
+db.ref("wishes").on("value", snap => {
+    const arr = [];
+    snap.forEach(child => {
+        arr.push({ id: child.key, ...child.val() });
+    });
+    wishStorage = arr;
+
+    const listPopup = document.getElementById("listPopup");
+    if (listPopup && !listPopup.classList.contains("hidden")) {
+        renderItems();
+    }
+});
+
+function addWishToDB(obj) {
+    return db.ref("wishes").push(obj);
+}
+function deleteWishFromDB(id) {
+    return db.ref("wishes/" + id).remove();
+}
+function deleteAllWishesFromDB() {
+    return db.ref("wishes").remove();
 }
 
 /* ============================================
@@ -125,14 +147,13 @@ if (sendBtn) {
         }
 
         const obj = {
-            id: Date.now(),
             name,
             wish,
             toxicLevel: toxic.level,
             time: new Date().toLocaleString("vi-VN")
         };
-        wishStorage.push(obj);
-        saveList();
+
+        addWishToDB(obj); // lưu lên Firebase
 
         const resultText = document.getElementById("resultText");
         resultText.innerHTML = `<b>${name}</b> gửi lời chúc:<br><br>“${wish}”`;
@@ -162,7 +183,7 @@ const adminLogin  = document.getElementById("adminLogin");
 const adminPass   = document.getElementById("adminPass");
 const submitAdmin = document.getElementById("submitAdmin");
 const cancelAdmin = document.getElementById("cancelAdmin");
-const ADMIN_PASSWORD = "14102008";
+const ADMIN_PASSWORD = "14102008";   // pass bạn đang dùng
 
 if (viewList)  viewList.onclick = () => openListPopup();
 if (closeList) closeList.onclick = () => { listPopup.classList.add("hidden"); isAdmin = false; };
@@ -190,7 +211,7 @@ if (submitAdmin) {
         isAdmin = true;
         adminLogin.classList.add("hidden");
         adminPass.value = "";
-        buildList();   // reload list ở chế độ admin
+        buildList();
     };
 }
 
@@ -304,14 +325,12 @@ function renderItems() {
     }
 }
 
-/* xóa từng lời chúc (admin đã đăng nhập) */
+/* xóa từng lời chúc (admin) */
 function deleteWish(id) {
-    wishStorage = wishStorage.filter(w => String(w.id) !== String(id));
-    saveList();
-    renderItems();
+    deleteWishFromDB(id);
 }
 
-/* xóa tất cả */
+/* xóa tất cả (admin) */
 function deleteAllWishes() {
     if (!wishStorage.length) {
         alert("Không có lời chúc nào để xóa.");
@@ -319,7 +338,5 @@ function deleteAllWishes() {
     }
     if (!confirm("Bạn có chắc chắn muốn xóa TẤT CẢ lời chúc?")) return;
 
-    wishStorage = [];
-    saveList();
-    renderItems();
+    deleteAllWishesFromDB();
 }
