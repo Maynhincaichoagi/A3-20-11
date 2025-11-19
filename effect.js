@@ -4,16 +4,16 @@
 function createHeart() {
     const h = document.createElement("div");
     h.classList.add("heart");
-    h.style.left = Math.random()*100 + "vw";
-    h.style.animationDuration = (3 + Math.random()*3) + "s";
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.animationDuration = (3 + Math.random() * 3) + "s";
     document.body.appendChild(h);
     setTimeout(() => h.remove(), 6000);
 }
 function createFlower() {
     const f = document.createElement("div");
     f.classList.add("flower");
-    f.style.left = Math.random()*100 + "vw";
-    f.style.animationDuration = (3 + Math.random()*4) + "s";
+    f.style.left = Math.random() * 100 + "vw";
+    f.style.animationDuration = (3 + Math.random() * 4) + "s";
     document.body.appendChild(f);
     setTimeout(() => f.remove(), 6000);
 }
@@ -26,36 +26,70 @@ setInterval(createFlower, 1300);
 const music = document.getElementById("bgMusic");
 const musicBtn = document.getElementById("musicBtn");
 if (music && musicBtn) {
-    musicBtn.onclick = () => music.paused ? music.play() : music.pause();
+    musicBtn.onclick = () => (music.paused ? music.play() : music.pause());
 }
 
 /* ============================================
-   LƯU LỜI CHÚC – FIREBASE (THAY CHO localStorage)
+   CHẾ ĐỘ LƯU: FIREBASE HAY LOCALSTORAGE
 ============================================ */
-const db = firebase.database();
+let useFirebase = false;
+let db = null;
+
+// Thử xem firebase có tồn tại không
+try {
+    if (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length > 0) {
+        db = firebase.database();
+        useFirebase = true;
+        console.log("✅ Dùng Firebase Realtime Database");
+    } else {
+        console.log("ℹ Không thấy firebase.apps – dùng localStorage");
+    }
+} catch (e) {
+    console.log("ℹ Firebase chưa sẵn sàng, fallback localStorage:", e);
+    useFirebase = false;
+}
+
 let wishStorage = [];
 
-// Lắng nghe realtime từ Firebase
-db.ref("wishes").on("value", snap => {
-    const arr = [];
-    snap.forEach(child => {
-        arr.push({ id: child.key, ...child.val() });
-    });
-    wishStorage = arr;
+// Nếu dùng Firebase: lắng nghe realtime từ DB
+if (useFirebase) {
+    db.ref("wishes").on("value", snap => {
+        const arr = [];
+        snap.forEach(child => {
+            arr.push({ id: child.key, ...child.val() });
+        });
+        wishStorage = arr;
 
-    const listPopup = document.getElementById("listPopup");
-    if (listPopup && !listPopup.classList.contains("hidden")) {
-        renderItems();
+        const listPopup = document.getElementById("listPopup");
+        if (listPopup && !listPopup.classList.contains("hidden")) {
+            renderItems();
+        }
+    });
+} else {
+    // Nếu KHÔNG có Firebase, dùng localStorage như bản cũ
+    try {
+        wishStorage = JSON.parse(localStorage.getItem("wishList") || "[]");
+    } catch {
+        wishStorage = [];
     }
-});
+}
+
+function saveListLocal() {
+    if (!useFirebase) {
+        localStorage.setItem("wishList", JSON.stringify(wishStorage));
+    }
+}
 
 function addWishToDB(obj) {
+    if (!useFirebase) return Promise.resolve(); // không làm gì nếu không có Firebase
     return db.ref("wishes").push(obj);
 }
 function deleteWishFromDB(id) {
+    if (!useFirebase) return Promise.resolve();
     return db.ref("wishes/" + id).remove();
 }
 function deleteAllWishesFromDB() {
+    if (!useFirebase) return Promise.resolve();
     return db.ref("wishes").remove();
 }
 
@@ -66,7 +100,7 @@ function checkToxic(msg) {
     const text = msg.toLowerCase().trim();
 
     // lol/loll/l0ll → 'lồn'
-    if (/l[\W_]*[o0óòôöø][\W_]*l[\W_]*l*/.test(text))
+    if (/l[\W_]*[o0óòôộöø][\W_]*l[\W_]*l*/.test(text))
         return { level: 100, word: "lol / loll / l0ll" };
 
     // duma / đụ má / đu ma...
@@ -94,7 +128,7 @@ function checkToxic(msg) {
 }
 
 function isSpam(x) {
-    x = x.toLowerCase().replace(/\s+/g,"");
+    x = x.toLowerCase().replace(/\s+/g, "");
     if (x.length < 2) return true;
     if (/^[0-9]+$/.test(x)) return true;
     if (/^([^\s])\1{3,}$/.test(x)) return true;
@@ -147,28 +181,43 @@ if (sendBtn) {
         }
 
         const obj = {
+            id: Date.now(),
             name,
             wish,
             toxicLevel: toxic.level,
             time: new Date().toLocaleString("vi-VN")
         };
 
-        // Ghi lên Firebase
-        addWishToDB(obj)
+        // Thêm vào mảng tạm
+        wishStorage.push(obj);
+
+        // Nếu có Firebase → lưu lên DB, ngược lại → lưu localStorage
+        if (useFirebase) {
+            addWishToDB({
+                name: obj.name,
+                wish: obj.wish,
+                toxicLevel: obj.toxicLevel,
+                time: obj.time
+            })
             .then(() => {
-                const resultText = document.getElementById("resultText");
-                resultText.innerHTML = `<b>${name}</b> gửi lời chúc:<br><br>“${wish}”`;
-
-                popup.classList.add("hidden");
-                resultBox.classList.remove("hidden");
-
-                nameInput.value = "";
-                wishInput.value = "";
+                console.log("Đã lưu lên Firebase");
             })
             .catch(err => {
                 console.error("Firebase error:", err);
                 alert("Lỗi khi lưu lời chúc lên Firebase: " + err.message);
             });
+        } else {
+            saveListLocal();
+        }
+
+        const resultText = document.getElementById("resultText");
+        resultText.innerHTML = `<b>${name}</b> gửi lời chúc:<br><br>“${wish}”`;
+
+        popup.classList.add("hidden");
+        resultBox.classList.remove("hidden");
+
+        nameInput.value = "";
+        wishInput.value = "";
     };
 }
 if (closeResult) closeResult.onclick = () => resultBox.classList.add("hidden");
@@ -190,11 +239,15 @@ const adminPass   = document.getElementById("adminPass");
 const submitAdmin = document.getElementById("submitAdmin");
 const cancelAdmin = document.getElementById("cancelAdmin");
 
-// đổi pass tại đây nếu muốn
-const ADMIN_PASSWORD = "14102008";
+// PASS ADMIN bạn muốn:
+// (theo yêu cầu trước đó: Baophamn1.)
+const ADMIN_PASSWORD = "Baophamn1.";
 
 if (viewList)  viewList.onclick = () => openListPopup();
-if (closeList) closeList.onclick = () => { listPopup.classList.add("hidden"); isAdmin = false; };
+if (closeList) closeList.onclick = () => { 
+    listPopup.classList.add("hidden"); 
+    isAdmin = false; 
+};
 
 if (adminBtn) {
     adminBtn.onclick = () => {
@@ -227,6 +280,16 @@ if (submitAdmin) {
 function openListPopup() {
     currentFilter = "all";
     currentSearch = "";
+
+    // nếu không dùng Firebase thì load lại từ localStorage (cho chắc)
+    if (!useFirebase) {
+        try {
+            wishStorage = JSON.parse(localStorage.getItem("wishList") || "[]");
+        } catch {
+            wishStorage = [];
+        }
+    }
+
     listPopup.classList.remove("hidden");
     buildList();
 }
@@ -277,7 +340,7 @@ function renderItems() {
     let list = wishStorage.slice();
 
     if (currentSearch) {
-        list = list.filter(w => w.name.toLowerCase().includes(currentSearch));
+        list = list.filter(w => w.name && w.name.toLowerCase().includes(currentSearch));
     }
 
     if (isAdmin) {
@@ -295,14 +358,18 @@ function renderItems() {
     }
 
     container.innerHTML = list.map(w => {
+        const time = w.time || "";
+        const name = w.name || "Ẩn danh";
+        const text = w.wish || "";
+
         if (!isAdmin) {
             return `
                 <div class="wishItem user">
                     <div class="wish-header">
-                        <span class="wish-name">${w.name}</span>
-                        <span class="wish-time">${w.time}</span>
+                        <span class="wish-name">${name}</span>
+                        <span class="wish-time">${time}</span>
                     </div>
-                    <div class="wish-text">${w.wish}</div>
+                    <div class="wish-text">${text}</div>
                 </div>
             `;
         }
@@ -314,10 +381,10 @@ function renderItems() {
         return `
             <div class="wishItem admin ${typeClass}">
                 <div class="wish-header">
-                    <span class="wish-name">${w.name}</span>
-                    <span class="wish-time">${w.time}</span>
+                    <span class="wish-name">${name}</span>
+                    <span class="wish-time">${time}</span>
                 </div>
-                <div class="wish-text">${w.wish}</div>
+                <div class="wish-text">${text}</div>
                 <div class="wish-meta">Mức: ${label}</div>
                 <div class="wish-actions">
                     <button data-id="${w.id}" class="delOne">Xóa</button>
@@ -333,9 +400,21 @@ function renderItems() {
     }
 }
 
-/* xóa từng lời chúc (admin đã đăng nhập) */
+/* xóa từng lời chúc */
 function deleteWish(id) {
-    deleteWishFromDB(id);
+    // Xóa trong mảng tạm
+    wishStorage = wishStorage.filter(w => String(w.id) !== String(id));
+
+    if (useFirebase) {
+        deleteWishFromDB(id).catch(err => {
+            console.error("Lỗi xóa Firebase:", err);
+            alert("Lỗi khi xóa trên Firebase: " + err.message);
+        });
+    } else {
+        saveListLocal();
+    }
+
+    renderItems();
 }
 
 /* xóa tất cả */
@@ -346,5 +425,16 @@ function deleteAllWishes() {
     }
     if (!confirm("Bạn có chắc chắn muốn xóa TẤT CẢ lời chúc?")) return;
 
-    deleteAllWishesFromDB();
+    wishStorage = [];
+
+    if (useFirebase) {
+        deleteAllWishesFromDB().catch(err => {
+            console.error("Lỗi xóa tất cả Firebase:", err);
+            alert("Lỗi khi xóa trên Firebase: " + err.message);
+        });
+    } else {
+        saveListLocal();
+    }
+
+    renderItems();
 }
